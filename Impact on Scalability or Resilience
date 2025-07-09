@@ -1,0 +1,10 @@
+## 📈 Impact on Scalability and Resilience
+
+This project improved system scalability by implementing asynchronous processing via [technology used—e.g., Kafka, Celery, Azure Functions], allowing the platform to handle [X%] more concurrent requests under load.
+
+Key resilience enhancements included:
+- 🛡 Circuit breaker integration to isolate failing services
+- ⚙️ Retry logic and exponential backoff for critical APIs
+- 🧠 Infrastructure as Code for consistent, recoverable environments
+
+These design decisions reduced downtime by [Y%], improved deployment reliability, and future-proofed the system for increased user growth and traffic spikes.
