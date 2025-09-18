@@ -1,0 +1,131 @@
+import React, { useState } from "react";
+
+// Example tree node structure
+const initialTree = [
+    {
+        id: 1,
+        name: "Root",
+        children: [
+            {
+                id: 2,
+                name: "Child 1",
+                children: [],
+            },
+            {
+                id: 3,
+                name: "Child 2",
+                children: [
+                    {
+                        id: 4,
+                        name: "Grandchild",
+                        children: [],
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+// Recursive component to render and modify the tree
+function TreeNode({ node, onUpdate, onDelete }) {
+    const [editing, setEditing] = useState(false);
+    const [name, setName] = useState(node.name);
+
+    const handleSave = () => {
+        onUpdate({ ...node, name });
+        setEditing(false);
+    };
+
+    return (
+        <li>
+            {editing ? (
+                <>
+                    <input value={name} onChange={e => setName(e.target.value)} />
+                    <button onClick={handleSave}>Save</button>
+                </>
+            ) : (
+                <>
+                    {node.name}
+                    <button onClick={() => setEditing(true)}>Edit</button>
+                    <button onClick={onDelete}>Delete</button>
+                </>
+            )}
+            <ul>
+                {node.children.map((child, idx) => (
+                    <TreeNode
+                        key={child.id}
+                        node={child}
+                        onUpdate={updatedChild =>
+                            onUpdate({
+                                ...node,
+                                children: node.children.map((c, i) =>
+                                    i === idx ? updatedChild : c
+                                ),
+                            })
+                        }
+                        onDelete={() =>
+                            onUpdate({
+                                ...node,
+                                children: node.children.filter((_, i) => i !== idx),
+                            })
+                        }
+                    />
+                ))}
+            </ul>
+            <button
+                onClick={() =>
+                    onUpdate({
+                        ...node,
+                        children: [
+                            ...node.children,
+                            {
+                                id: Date.now(),
+                                name: "New Node",
+                                children: [],
+                            },
+                        ],
+                    })
+                }
+            >
+                Add Child
+            </button>
+        </li>
+    );
+}
+
+export default function RecursiveTreeModifier() {
+    const [tree, setTree] = useState(initialTree);
+
+    const updateNode = (idx, updatedNode) => {
+        setTree(tree =>
+            tree.map((node, i) => (i === idx ? updatedNode : node))
+        );
+    };
+
+    const deleteNode = idx => {
+        setTree(tree => tree.filter((_, i) => i !== idx));
+    };
+
+    return (
+        <ul>
+            {tree.map((node, idx) => (
+                <TreeNode
+                    key={node.id}
+                    node={node}
+                    onUpdate={updatedNode => updateNode(idx, updatedNode)}
+                    onDelete={() => deleteNode(idx)}
+                />
+            ))}
+            <button
+                onClick={() =>
+                    setTree([
+                        ...tree,
+                        { id: Date.now(), name: "New Root", children: [] },
+                    ])
+                }
+            >
+                Add Root
+            </button>
+        </ul>
+    );
+}
